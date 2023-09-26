@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fic7_app/bloc/checkout/checkout_bloc.dart';
 import 'package:flutter_fic7_app/data/models/products_response_model.dart';
 
+import '../../../bloc/checkout/checkout_bloc.dart';
 import '../../../utils/color_resources.dart';
 import '../../../utils/custom_themes.dart';
 import '../../../utils/dimensions.dart';

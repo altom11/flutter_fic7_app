@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fic7_app/utils/price_ext.dart';
@@ -31,18 +30,19 @@ class CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: Container(
-          height: 80,
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimensions.paddingSizeLarge,
-            vertical: Dimensions.paddingSizeDefault,
-          ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(10), topLeft: Radius.circular(10)),
-          ),
-          child:
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        height: 80,
+        padding: const EdgeInsets.symmetric(
+          horizontal: Dimensions.paddingSizeLarge,
+          vertical: Dimensions.paddingSizeDefault,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(10), topLeft: Radius.circular(10)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
             Expanded(
                 child: Center(
                     child: Row(
@@ -56,7 +56,7 @@ class CartPageState extends State<CartPage> {
                   builder: (context, state) {
                     return state.maybeWhen(
                       orElse: () {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       },
                       loaded: (products) {
                         int totalPrice = 0;
@@ -67,7 +67,7 @@ class CartPageState extends State<CartPage> {
                           },
                         );
                         return Text(
-                          '${totalPrice}'.formatPrice(),
+                          '$totalPrice'.formatPrice(),
                           style: titilliumSemiBold.copyWith(
                               color: Theme.of(context).primaryColor,
                               fontSize: Dimensions.fontSizeLarge),
@@ -79,35 +79,72 @@ class CartPageState extends State<CartPage> {
               ],
             ))),
             Builder(
-              builder: (context) => InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const CheckoutPage();
-                  }));
+              builder: (context) => BlocBuilder<CheckoutBloc, CheckoutState>(
+                builder: (context, state) {
+                  return state.maybeWhen(
+                    orElse: () {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                    loaded: (products) {
+                      return products.isEmpty
+                          ? Container(
+                              width: MediaQuery.of(context).size.width / 3.5,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColorLight,
+                                borderRadius: BorderRadius.circular(
+                                    Dimensions.paddingSizeSmall),
+                              ),
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: Dimensions.paddingSizeSmall,
+                                      vertical: Dimensions.fontSizeSmall),
+                                  child: Text('Checkout',
+                                      style: titilliumSemiBold.copyWith(
+                                        fontSize: Dimensions.fontSizeDefault,
+                                        color: Colors.grey,
+                                      )),
+                                ),
+                              ),
+                            )
+                          : InkWell(
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return const CheckoutPage();
+                                }));
+                              },
+                              child: Container(
+                                width: MediaQuery.of(context).size.width / 3.5,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(
+                                      Dimensions.paddingSizeSmall),
+                                ),
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: Dimensions.paddingSizeSmall,
+                                        vertical: Dimensions.fontSizeSmall),
+                                    child: Text('Checkout',
+                                        style: titilliumSemiBold.copyWith(
+                                          fontSize: Dimensions.fontSizeDefault,
+                                          color: Theme.of(context).cardColor,
+                                        )),
+                                  ),
+                                ),
+                              ),
+                            );
+                    },
+                  );
                 },
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3.5,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    borderRadius:
-                        BorderRadius.circular(Dimensions.paddingSizeSmall),
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: Dimensions.paddingSizeSmall,
-                          vertical: Dimensions.fontSizeSmall),
-                      child: Text('Checkout',
-                          style: titilliumSemiBold.copyWith(
-                            fontSize: Dimensions.fontSizeDefault,
-                            color: Theme.of(context).cardColor,
-                          )),
-                    ),
-                  ),
-                ),
               ),
             ),
-          ])),
+          ],
+        ),
+      ),
       body: Column(children: [
         const CustomAppBar(title: 'Cart'),
         Expanded(
@@ -125,6 +162,11 @@ class CartPageState extends State<CartPage> {
                           );
                         },
                         loaded: (products) {
+                          if (products.isEmpty) {
+                            return const Center(
+                              child: Text('No Data'),
+                            );
+                          }
                           return ListView.builder(
                             itemCount: products.length,
                             padding: const EdgeInsets.all(0),

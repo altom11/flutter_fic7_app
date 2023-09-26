@@ -5,11 +5,11 @@ extension PriceExtension on String {
     MoneyFormatter fmf = MoneyFormatter(
         amount: double.parse(this),
         settings: MoneyFormatterSettings(
-          symbol: 'IDR',
+          symbol: 'Rp.',
           thousandSeparator: '.',
-          decimalSeparator: ',',
+          // decimalSeparator: ',',
           symbolAndNumberSeparator: ' ',
-          fractionDigits: 2,
+          fractionDigits: 0,
         ));
     return fmf.output.symbolOnLeft;
   }
